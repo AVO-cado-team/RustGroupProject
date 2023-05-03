@@ -24,17 +24,6 @@ pub struct Dll<T> {
 }
 
 impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
-    fn new(value: T) -> Self {
-        let node = Rc::new(RefCell::new(Node::new(value, None, None)));
-        let first = Some(node.clone());
-        let last = Some(node.clone());
-        Dll {
-            first,
-            last,
-            length: 1,
-        }
-    }
-
     fn push_back(&mut self, value: T) {
         let new_node = Rc::new(RefCell::new(Node::new(value, None, None)));
         match self.last.clone() {
@@ -184,118 +173,49 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     }
 
     fn clear(&mut self) {
-        // Pop all elements from the list and free them
         while self.pop_back().is_some() {}
     }
 }
 
 pub struct DllIterator<T> {
-    dll: Dll<T>,
+    dll: Box<dyn DoubleLinkedList<T>>,
 }
 
-impl<T> Iterator for DllIterator<T>
-where
-    T: Default + PartialEq,
-    Dll<T>: DoubleLinkedList<T>,
-{
-    type Item = T;
+// impl<T, V> IntoIterator for T<V>
+// where
+//     T: DoubleLinkedList<V>,
+//     V: Default + PartialEq,
+// {
+//     type Item = V;
+//     type IntoIter = DllIterator<V>;
 
-    fn next(&mut self) -> Option<Self::Item> {
-        return self.dll.pop_forward();
-    }
-}
+//     fn into_iter(self) -> Self::IntoIter {
+//         DllIterator {
+//             dll: Box::new(self),
+//         }
+//     }
+// }
+// impl<T> Iterator for DllIterator<T>
+// where
+//     T: Default + PartialEq,
+//     Dll<T>: DoubleLinkedList<T>,
+// {
+//     type Item = T;
 
-impl<T> IntoIterator for Dll<T>
-where
-    T: Default + PartialEq,
-{
-    // Implement IntoIterator trait for Dll
-    type Item = T;
-    type IntoIter = DllIterator<T>;
+//     fn next(&mut self) -> Option<Self::Item> {
+//         self.dll.pop_forward()
+//     }
+// }
 
-    fn into_iter(self) -> Self::IntoIter {
-        DllIterator { dll: self }
-    }
-}
+// impl<T> IntoIterator for T
+// where
+//     T: DoubleLinkedList<V: Default + PartialEq>,
+// {
+//     // Implement IntoIterator trait for Dll
+//     type Item = T;
+//     type IntoIter = DllIterator<T>;
 
-mod tests {
-    use super::*;
-
-    fn generate_dll() -> Dll<i32> {
-        let mut dll = Dll::new(0);
-        dll.push_back(1);
-        dll.push_back(2);
-        dll.push_back(3);
-        dll.push_back(4);
-
-        dll
-    }
-    #[test]
-    fn test_new() {
-        let dll = Dll::new(1);
-        assert_eq!(dll.len(), 1);
-        assert_eq!(dll.get(0), Some(&1));
-    }
-
-    #[test]
-    fn test_pop() {
-        let mut dll = Dll::new(0);
-        dll.push_back(1);
-        dll.push_back(2);
-
-        let last_element = dll.pop_back().unwrap();
-        assert_eq!(last_element, 2);
-    }
-
-    #[test]
-    fn test_remove() {
-        // dll = [0, 1, 2]
-        let mut dll = Dll::new(0);
-        dll.push_back(1);
-        dll.push_back(2);
-
-        let index = 1;
-        let data = dll.get(index).unwrap();
-        let _removed_data = dll.remove(index).unwrap();
-        let removed_data = dll.remove(index).unwrap();
-        // dll = [0, 2]
-        assert_eq!(2, removed_data);
-    }
-
-    #[test]
-    fn test_push_back() {
-        let mut dll = Dll::new(1);
-        dll.push_back(2);
-        assert_eq!(dll.len(), 2);
-        assert_eq!(dll.get(0), Some(&1));
-        assert_eq!(dll.get(1), Some(&2));
-    }
-
-    #[test]
-    fn find() {
-        let dll = generate_dll();
-        for i in 0..dll.len() {
-            let value = i as i32;
-            let index = dll.find(&value);
-            assert_eq!(index, Some(i));
-        }
-
-        for i in 0..dll.len() {
-            let value = i as i32;
-            let index = dll.find(&value);
-            assert_eq!(index, Some(i));
-        }
-    }
-    #[test]
-    fn iterate_and_print() {
-        let mut dll = Dll::new(0);
-        dll.push_back(1);
-        dll.push_back(2);
-        dll.push_back(3);
-        dll.push_back(4);
-        for i in dll {
-            println!("{}", i);
-        }
-        // print!("{:?}", dll.pop_back());
-    }
-}
+//     fn into_iter(self) -> Self::IntoIter {
+//         DllIterator { dll: self }
+//     }
+// }

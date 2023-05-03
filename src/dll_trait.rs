@@ -2,7 +2,6 @@ pub trait DoubleLinkedList<T>
 where
     T: Default + PartialEq,
 {
-    fn new(value: T) -> Self;
     fn push_back(&mut self, value: T);
     fn push_forward(&mut self, value: T);
     fn pop_back(&mut self) -> Option<T>;
@@ -14,5 +13,4 @@ where
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool;
     fn clear(&mut self);
-    // TODO: Sanya says to implement iterators \_(*_*)_/
 }
