@@ -1,9 +1,11 @@
 mod tests_i32 {
+    use rstest::{fixture, rstest};
     use rust_group_project::{dll_trait::DoubleLinkedList, rc_refcell::Dll};
 
     /**
      * dll = [0, 1, 2, 3, 4]
      */
+    #[fixture]
     fn generate_dll() -> Box<dyn DoubleLinkedList<i32>> {
         let mut dll = Dll::default();
         dll.push_back(0);
@@ -15,17 +17,27 @@ mod tests_i32 {
         Box::new(dll)
     }
 
-    #[test]
-    fn pop() {
-        let mut dll = generate_dll();
-
-        assert_eq!(dll.pop_front(), Some(0));
-        assert_eq!(dll.pop_front(), Some(1));
-        assert_eq!(dll.pop_back(), Some(4));
-        assert_eq!(dll.pop_back(), Some(3));
-        assert_eq!(dll.pop_front(), Some(2));
-        assert_eq!(dll.pop_front(), None);
+    #[rstest]
+    fn pop(mut generate_dll: Box<dyn DoubleLinkedList<i32>>) {
+        assert_eq!(generate_dll.pop_front(), Some(0));
+        assert_eq!(generate_dll.pop_front(), Some(1));
+        assert_eq!(generate_dll.pop_back(), Some(4));
+        assert_eq!(generate_dll.pop_back(), Some(3));
+        assert_eq!(generate_dll.pop_front(), Some(2));
+        assert_eq!(generate_dll.pop_front(), None);
     }
+
+    // #[test]
+    // fn pop() {
+    //     let mut dll = generate_dll();
+
+    //     assert_eq!(dll.pop_front(), Some(0));
+    //     assert_eq!(dll.pop_front(), Some(1));
+    //     assert_eq!(dll.pop_back(), Some(4));
+    //     assert_eq!(dll.pop_back(), Some(3));
+    //     assert_eq!(dll.pop_front(), Some(2));
+    //     assert_eq!(dll.pop_front(), None);
+    // }
 
     #[test]
     fn remove() {
