@@ -19,12 +19,12 @@ mod tests_i32 {
     fn pop() {
         let mut dll = generate_dll();
 
-        assert_eq!(dll.pop_forward(), Some(0));
-        assert_eq!(dll.pop_forward(), Some(1));
+        assert_eq!(dll.pop_front(), Some(0));
+        assert_eq!(dll.pop_front(), Some(1));
         assert_eq!(dll.pop_back(), Some(4));
         assert_eq!(dll.pop_back(), Some(3));
-        assert_eq!(dll.pop_forward(), Some(2));
-        assert_eq!(dll.pop_forward(), None);
+        assert_eq!(dll.pop_front(), Some(2));
+        assert_eq!(dll.pop_front(), None);
     }
 
     #[test]
@@ -46,11 +46,11 @@ mod tests_i32 {
         dll.push_back(0);
         dll.push_back(1);
         dll.push_back(2);
-        dll.push_forward(3);
-        dll.push_forward(4);
+        dll.push_front(3);
+        dll.push_front(4);
 
-        assert_eq!(dll.pop_forward(), Some(4));
-        assert_eq!(dll.pop_forward(), Some(3));
+        assert_eq!(dll.pop_front(), Some(4));
+        assert_eq!(dll.pop_front(), Some(3));
         assert_eq!(dll.len(), 3);
         assert_eq!(dll.pop_back(), Some(2));
         assert_eq!(dll.pop_back(), Some(1));
@@ -127,12 +127,12 @@ mod tests_vec {
     fn pop() {
         let mut dll = generate_dll();
 
-        assert_eq!(dll.pop_forward(), Some(vec![0, 1, 2, 3, 4]));
-        assert_eq!(dll.pop_forward(), Some(vec![1, 2, 3]));
+        assert_eq!(dll.pop_front(), Some(vec![0, 1, 2, 3, 4]));
+        assert_eq!(dll.pop_front(), Some(vec![1, 2, 3]));
         assert_eq!(dll.pop_back(), Some(vec![10, 11, 12]));
         assert_eq!(dll.pop_back(), Some(vec![7, 8, 9]));
-        assert_eq!(dll.pop_forward(), Some(vec![4, 5, 6]));
-        assert_eq!(dll.pop_forward(), None);
+        assert_eq!(dll.pop_front(), Some(vec![4, 5, 6]));
+        assert_eq!(dll.pop_front(), None);
     }
 
     #[test]
@@ -154,11 +154,11 @@ mod tests_vec {
         dll.push_back(vec![0, 1, 2, 3, 4]);
         dll.push_back(vec![1, 2, 3]);
         dll.push_back(vec![4, 5, 6]);
-        dll.push_forward(vec![7, 8, 9]);
-        dll.push_forward(vec![10, 11, 12]);
+        dll.push_front(vec![7, 8, 9]);
+        dll.push_front(vec![10, 11, 12]);
 
-        assert_eq!(dll.pop_forward(), Some(vec![10, 11, 12]));
-        assert_eq!(dll.pop_forward(), Some(vec![7, 8, 9]));
+        assert_eq!(dll.pop_front(), Some(vec![10, 11, 12]));
+        assert_eq!(dll.pop_front(), Some(vec![7, 8, 9]));
         assert_eq!(dll.len(), 3);
         assert_eq!(dll.pop_back(), Some(vec![4, 5, 6]));
         assert_eq!(dll.pop_back(), Some(vec![1, 2, 3]));
@@ -175,7 +175,7 @@ mod tests_vec {
         let data = dll.find(&vec![1, 2, 3]);
         assert_eq!(data, Some(1));
 
-        dll.push_forward(vec![0, 1, 2, 3, 4]);
+        dll.push_front(vec![0, 1, 2, 3, 4]);
         let data = dll.find(&vec![0, 1, 2, 3, 4]);
         assert_eq!(data, Some(0));
     }

@@ -40,7 +40,7 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
         self.length += 1;
     }
 
-    fn push_forward(&mut self, value: T) {
+    fn push_front(&mut self, value: T) {
         let node = Rc::new(RefCell::new(Node::new(value, None, None)));
         match self.first.clone() {
             Some(first) => {
@@ -73,7 +73,7 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
         Some(node.value)
     }
 
-    fn pop_forward(&mut self) -> Option<T> {
+    fn pop_front(&mut self) -> Option<T> {
         let node = std::mem::replace(&mut self.first, None)?;
         if let Some(next) = (*node).borrow_mut().next.as_mut() {
             (*next).borrow_mut().prev = None;
@@ -95,7 +95,7 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
         if index >= self.length {
             return None;
         } else if index == 0 {
-            return self.pop_forward();
+            return self.pop_front();
         } else if index == self.length - 1 {
             return self.pop_back();
         }
@@ -169,16 +169,12 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     }
 
     fn is_empty(&self) -> bool {
-        self.first.is_none() && self.last.is_none()
+        self.length == 0
     }
 
     fn clear(&mut self) {
         while self.pop_back().is_some() {}
     }
-}
-
-pub struct DllIterator<T> {
-    dll: Box<dyn DoubleLinkedList<T>>,
 }
 
 // impl<T, V> IntoIterator for T<V>
@@ -203,7 +199,7 @@ pub struct DllIterator<T> {
 //     type Item = T;
 
 //     fn next(&mut self) -> Option<Self::Item> {
-//         self.dll.pop_forward()
+//         self.dll.pop_front()
 //     }
 // }
 
