@@ -1,6 +1,8 @@
+mod dll_trait;
 mod rc_refcell;
-use rc_refcell::Dll;
-use RustGroupProject::dll_trait::{self, DoubleLinkedList};
+
+use crate::dll_trait::DoubleLinkedList;
+use crate::rc_refcell::Dll;
 fn main() {
     let list = Dll::new(Some(1));
     println!("Hello, world!");
