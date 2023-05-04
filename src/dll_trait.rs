@@ -2,7 +2,6 @@ pub trait DoubleLinkedList<T>
 where
     T: Default + PartialEq,
 {
-    // fn default() -> Self;
     fn push_back(&mut self, value: T);
     fn push_front(&mut self, value: T);
 

@@ -13,13 +13,6 @@ where
     fn new(value: T, next: *mut Node<T>, prev: *mut Node<T>) -> Node<T> {
         Node { value, next, prev }
     }
-    fn default() -> Node<T> {
-        Node {
-            value: T::default(),
-            next: std::ptr::null_mut(),
-            prev: std::ptr::null_mut(),
-        }
-    }
 }
 
 pub struct Dll<T> {
@@ -40,38 +33,40 @@ impl<T> Default for Dll<T> {
 
 impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     fn push_back(&mut self, value: T) {
-        let mut new_node = Node::new(value, std::ptr::null_mut(), std::ptr::null_mut());
+        let new_node_box = Box::new(Node::new(value, std::ptr::null_mut(), std::ptr::null_mut()));
+        let mut new_node = Box::into_raw(new_node_box);
 
         match self.last.is_null() {
             true => {
-                self.first = &mut new_node;
-                self.last = &mut new_node;
+                self.first = new_node;
+                self.last = new_node;
             }
             false => {
                 unsafe {
-                    (*self.last).next = &mut new_node;
-                    new_node.prev = self.last;
+                    (*self.last).next = new_node;
+                    (*new_node).prev = self.last;
                 }
-                self.last = &mut new_node;
+                self.last = new_node;
             }
         }
         self.length += 1;
     }
 
     fn push_front(&mut self, value: T) {
-        let mut new_node = Node::new(value, std::ptr::null_mut(), std::ptr::null_mut());
+        let new_node_box = Box::new(Node::new(value, std::ptr::null_mut(), std::ptr::null_mut()));
+        let mut new_node = Box::into_raw(new_node_box);
 
         match self.first.is_null() {
             true => {
-                self.first = &mut new_node;
-                self.last = &mut new_node;
+                self.first = new_node;
+                self.last = new_node;
             }
             false => {
                 unsafe {
-                    (*self.first).prev = &mut new_node;
-                    new_node.next = self.first;
+                    (*self.first).prev = new_node;
+                    (*new_node).next = self.first;
                 }
-                self.first = &mut new_node;
+                self.first = new_node;
             }
         }
         self.length += 1;
@@ -94,6 +89,8 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
                     (*self.last).next = std::ptr::null_mut();
                 }
             }
+
+            std::mem::drop(Box::from_raw(last));
             self.length -= 1;
             Some(value)
         }
@@ -116,6 +113,8 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
                     (*self.first).prev = std::ptr::null_mut();
                 }
             }
+
+            std::mem::drop(Box::from_raw(first));
             self.length -= 1;
             Some(value)
         }
@@ -140,6 +139,8 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
             let prev = &mut *current.prev;
             next.prev = current.prev;
             prev.next = current.next;
+
+            std::mem::drop(Box::from_raw(current));
             self.length -= 1;
             Some(value)
         }
@@ -187,6 +188,17 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     }
 
     fn clear(&mut self) {
-        todo!()
+        let mut current = self.first;
+        while !current.is_null() {
+            unsafe {
+                let next = (*current).next;
+                std::mem::drop(Box::from_raw(current));
+                current = next;
+            }
+        }
+
+        self.first = std::ptr::null_mut();
+        self.last = std::ptr::null_mut();
+        self.length = 0;
     }
 }
