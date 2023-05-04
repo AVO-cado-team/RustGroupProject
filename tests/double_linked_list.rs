@@ -1,5 +1,8 @@
+use rstest_reuse::{self, *};
+
 mod tests_i32 {
     use rstest::{fixture, rstest};
+    use rstest_reuse::{self, *};
     use rust_group_project::{
         dll_trait::DoubleLinkedList, r#unsafe::Dll as UnsafeDll, rc_refcell::Dll as RCDll,
         unsave_cell::Dll as UnsafeCellDll,
@@ -29,10 +32,15 @@ mod tests_i32 {
         Box::new(dll)
     }
 
+    #[template]
     #[rstest]
-    fn pop(
+    fn base(
         #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
     ) {
+    }
+
+    #[apply(base)]
+    fn pop(mut dll: Box<dyn DoubleLinkedList<i32>>) {
         assert_eq!(dll.pop_front(), Some(0));
         assert_eq!(dll.pop_front(), Some(1));
         assert_eq!(dll.pop_back(), Some(4));
@@ -41,10 +49,8 @@ mod tests_i32 {
         assert_eq!(dll.pop_front(), None);
     }
 
-    #[rstest]
-    fn remove(
-        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
-    ) {
+    #[apply(base)]
+    fn remove(mut dll: Box<dyn DoubleLinkedList<i32>>) {
         assert_eq!(dll.remove(0), Some(0));
         assert_eq!(dll.remove(0), Some(1));
         assert_eq!(dll.remove(3), None);
@@ -54,10 +60,8 @@ mod tests_i32 {
         assert_eq!(dll.remove(0), None);
     }
 
-    #[rstest]
-    fn push(
-        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
-    ) {
+    #[apply(base)]
+    fn push(mut dll: Box<dyn DoubleLinkedList<i32>>) {
         assert_eq!(dll.pop_front(), Some(0));
         assert_eq!(dll.pop_front(), Some(1));
         assert_eq!(dll.len(), 3);
@@ -67,8 +71,8 @@ mod tests_i32 {
         assert_eq!(dll.pop_back(), None);
     }
 
-    #[rstest]
-    fn find(#[values(generate_rcdll(), generate_unsafedll())] dll: Box<dyn DoubleLinkedList<i32>>) {
+    #[apply(base)]
+    fn find(dll: Box<dyn DoubleLinkedList<i32>>) {
         for i in 0..dll.len() {
             let value = i as i32;
             let index = dll.find(&value);
@@ -82,19 +86,15 @@ mod tests_i32 {
         }
     }
 
-    #[rstest]
-    fn clear_is_empty(
-        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
-    ) {
+    #[apply(base)]
+    fn clear_is_empty(mut dll: Box<dyn DoubleLinkedList<i32>>) {
         dll.clear();
         assert_eq!(dll.len(), 0);
         assert!(dll.is_empty());
     }
 
-    #[rstest]
-    fn len(
-        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
-    ) {
+    #[apply(base)]
+    fn len(mut dll: Box<dyn DoubleLinkedList<i32>>) {
         assert_eq!(dll.len(), 5);
         dll.clear();
         assert_eq!(dll.len(), 0);
