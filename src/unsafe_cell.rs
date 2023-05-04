@@ -57,32 +57,44 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     }
 
     fn pop_back(&mut self) -> Option<T> {
-        let node = std::mem::replace(&mut self.last, None)?;
-        unsafe {
-            if let Some(prev) = (*node.get()).prev.clone() {
+        let current = self.last.clone()?;
+        let prev = unsafe { &(*current.get()).prev };
+        if let Some(prev) = prev {
+            unsafe {
                 (*prev.get()).next = None;
-                self.last = Some(prev);
-            } else {
-                self.first = None;
-                self.last = None;
             }
+            self.last = Some(prev.clone());
+        } else {
+            self.first = None;
+            self.last = None;
+        }
+
+        unsafe {
+            let value = std::mem::take(&mut (*current.get()).value);
+            self.last = prev.clone();
             self.length -= 1;
-            Some(std::ptr::read(&(*node.get()).value))
+            Some(value)
         }
     }
 
     fn pop_front(&mut self) -> Option<T> {
-        let node = std::mem::replace(&mut self.first, None)?;
-        unsafe {
-            if let Some(next) = (*node.get()).next.clone() {
+        let current = self.first.clone()?;
+        let next = unsafe { &(*current.get()).next };
+        if let Some(next) = next {
+            unsafe {
                 (*next.get()).prev = None;
-                self.first = Some(next);
-            } else {
-                self.last = None;
-                self.first = None;
             }
+            self.first = Some(next.clone());
+        } else {
+            self.first = None;
+            self.last = None;
+        }
+
+        unsafe {
+            let value = std::mem::take(&mut (*current.get()).value);
+            self.first = next.clone();
             self.length -= 1;
-            Some(std::ptr::read(&(*node.get()).value))
+            Some(value)
         }
     }
 
