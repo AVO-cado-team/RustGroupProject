@@ -16,7 +16,6 @@ mod tests_i32 {
         dll.push_back(2);
         dll.push_back(3);
         dll.push_back(4);
-
         Box::new(dll)
     }
 
@@ -28,7 +27,6 @@ mod tests_i32 {
         dll.push_back(2);
         dll.push_back(3);
         dll.push_back(4);
-
         Box::new(dll)
     }
 
