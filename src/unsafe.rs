@@ -78,7 +78,7 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
         }
         unsafe {
             let last = &mut *self.last;
-            let value = std::ptr::read(&last.value);
+            let value = std::mem::take(&mut last.value);
             match last.prev.is_null() {
                 true => {
                     self.first = std::ptr::null_mut();
@@ -102,7 +102,7 @@ impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
         }
         unsafe {
             let first = &mut *self.first;
-            let value = std::ptr::read(&first.value);
+            let value = std::mem::take(&mut first.value);
             match first.next.is_null() {
                 true => {
                     self.first = std::ptr::null_mut();
