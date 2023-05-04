@@ -1,13 +1,24 @@
 mod tests_i32 {
     use rstest::{fixture, rstest};
-    use rust_group_project::{dll_trait::DoubleLinkedList, rc_refcell::Dll};
+    use rust_group_project::{
+        dll_trait::DoubleLinkedList, r#unsafe::Dll as UnsafeDll, rc_refcell::Dll as RCDll,
+    };
 
-    /**
-     * dll = [0, 1, 2, 3, 4]
-     */
     #[fixture]
-    fn generate_dll() -> Box<dyn DoubleLinkedList<i32>> {
-        let mut dll = Dll::default();
+    fn generate_rcdll() -> Box<dyn DoubleLinkedList<i32>> {
+        let mut dll = RCDll::default();
+        dll.push_back(0);
+        dll.push_back(1);
+        dll.push_back(2);
+        dll.push_back(3);
+        dll.push_back(4);
+
+        Box::new(dll)
+    }
+
+    #[fixture]
+    fn generate_unsafedll() -> Box<dyn DoubleLinkedList<i32>> {
+        let mut dll = UnsafeDll::default();
         dll.push_back(0);
         dll.push_back(1);
         dll.push_back(2);
@@ -18,31 +29,21 @@ mod tests_i32 {
     }
 
     #[rstest]
-    fn pop(mut generate_dll: Box<dyn DoubleLinkedList<i32>>) {
-        assert_eq!(generate_dll.pop_front(), Some(0));
-        assert_eq!(generate_dll.pop_front(), Some(1));
-        assert_eq!(generate_dll.pop_back(), Some(4));
-        assert_eq!(generate_dll.pop_back(), Some(3));
-        assert_eq!(generate_dll.pop_front(), Some(2));
-        assert_eq!(generate_dll.pop_front(), None);
+    fn pop(
+        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
+    ) {
+        assert_eq!(dll.pop_front(), Some(0));
+        assert_eq!(dll.pop_front(), Some(1));
+        assert_eq!(dll.pop_back(), Some(4));
+        assert_eq!(dll.pop_back(), Some(3));
+        assert_eq!(dll.pop_front(), Some(2));
+        assert_eq!(dll.pop_front(), None);
     }
 
-    // #[test]
-    // fn pop() {
-    //     let mut dll = generate_dll();
-
-    //     assert_eq!(dll.pop_front(), Some(0));
-    //     assert_eq!(dll.pop_front(), Some(1));
-    //     assert_eq!(dll.pop_back(), Some(4));
-    //     assert_eq!(dll.pop_back(), Some(3));
-    //     assert_eq!(dll.pop_front(), Some(2));
-    //     assert_eq!(dll.pop_front(), None);
-    // }
-
-    #[test]
-    fn remove() {
-        let mut dll = generate_dll();
-
+    #[rstest]
+    fn remove(
+        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
+    ) {
         assert_eq!(dll.remove(0), Some(0));
         assert_eq!(dll.remove(0), Some(1));
         assert_eq!(dll.remove(3), None);
@@ -52,27 +53,21 @@ mod tests_i32 {
         assert_eq!(dll.remove(0), None);
     }
 
-    #[test]
-    fn push() {
-        let mut dll = Dll::default();
-        dll.push_back(0);
-        dll.push_back(1);
-        dll.push_back(2);
-        dll.push_front(3);
-        dll.push_front(4);
-
-        assert_eq!(dll.pop_front(), Some(4));
-        assert_eq!(dll.pop_front(), Some(3));
+    #[rstest]
+    fn push(
+        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
+    ) {
+        assert_eq!(dll.pop_front(), Some(0));
+        assert_eq!(dll.pop_front(), Some(1));
         assert_eq!(dll.len(), 3);
+        assert_eq!(dll.pop_back(), Some(4));
+        assert_eq!(dll.pop_back(), Some(3));
         assert_eq!(dll.pop_back(), Some(2));
-        assert_eq!(dll.pop_back(), Some(1));
-        assert_eq!(dll.pop_back(), Some(0));
         assert_eq!(dll.pop_back(), None);
     }
 
-    #[test]
-    fn find() {
-        let dll = generate_dll();
+    #[rstest]
+    fn find(#[values(generate_rcdll(), generate_unsafedll())] dll: Box<dyn DoubleLinkedList<i32>>) {
         for i in 0..dll.len() {
             let value = i as i32;
             let index = dll.find(&value);
@@ -86,24 +81,19 @@ mod tests_i32 {
         }
     }
 
-    #[test]
-    // fn iterate() {
-    //     let dll = generate_dll();
-    //     for (el, i) in dll {
-    //         assert_eq!(i, 0);
-    //     }
-    // }
-    #[test]
-    fn clear_is_empty() {
-        let mut dll = generate_dll();
+    #[rstest]
+    fn clear_is_empty(
+        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
+    ) {
         dll.clear();
         assert_eq!(dll.len(), 0);
         assert!(dll.is_empty());
     }
 
-    #[test]
-    fn len() {
-        let mut dll = generate_dll();
+    #[rstest]
+    fn len(
+        #[values(generate_rcdll(), generate_unsafedll())] mut dll: Box<dyn DoubleLinkedList<i32>>,
+    ) {
         assert_eq!(dll.len(), 5);
         dll.clear();
         assert_eq!(dll.len(), 0);

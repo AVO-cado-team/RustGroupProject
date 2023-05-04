@@ -28,6 +28,16 @@ pub struct Dll<T> {
     length: usize,
 }
 
+impl<T> Default for Dll<T> {
+    fn default() -> Dll<T> {
+        Dll {
+            first: std::ptr::null_mut(),
+            last: std::ptr::null_mut(),
+            length: 0,
+        }
+    }
+}
+
 impl<T: Default + PartialEq> DoubleLinkedList<T> for Dll<T> {
     fn push_back(&mut self, value: T) {
         let mut new_node = Node::new(value, std::ptr::null_mut(), std::ptr::null_mut());
