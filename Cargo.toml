@@ -1,8 +1,18 @@
 [package]
-name = "RustGroupProject"
+name = "rust_group_project"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+
+[dev-dependencies]
+rstest_reuse = "0.5.0"
+rstest = "0.17.0"
+bencher = "0.1.5"
+
+[[bench]]
+name = "rc_refcell"
+harness = false
